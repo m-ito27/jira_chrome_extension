@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "URL and H1 copier",
+  "version": "0.1",
+  "description": "Copy the last part of the URL and the first h1 tag to clipboard",
+  "permissions": [
+    "activeTab",
+    "clipboardWrite",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png"
+  }
+}
