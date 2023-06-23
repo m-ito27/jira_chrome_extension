@@ -4,11 +4,18 @@ window.onload = function() {
       chrome.scripting.executeScript(
         {
           target: {tabId: tabs[0].id},
-          function: copyUrlAndH1
+          func: getUrlAndH1
         },
         (result) => {
           if (chrome.runtime.lastError) {
-            console.error(chrome.runtime.lastError.message);
+            console.error(chrome.runtime.lastError);
+          } else {
+            // Use clipboard directly in the popup page.
+            navigator.clipboard.writeText(result[0].result).then(() => {
+              console.log("Copied successfully");
+            }).catch((err) => {
+              console.error("Error copying text: ", err);
+            });
           }
         }
       );
@@ -16,13 +23,8 @@ window.onload = function() {
   });
 }
 
-function copyUrlAndH1() {
+function getUrlAndH1() {
   let urlLastPart = window.location.pathname.split("/").pop();
   let h1Text = document.querySelector('h1') ? document.querySelector('h1').innerText : '';
-  let combinedText = `${urlLastPart} ${h1Text}`;
-  console.log(combinedText)
-  // Copy to clipboard
-  navigator.clipboard.writeText(combinedText);
-
-  return combinedText;
+  return `${urlLastPart} ${h1Text}`;
 }

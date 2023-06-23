@@ -5,7 +5,6 @@
   "description": "Copy the last part of the URL and the first h1 tag to clipboard",
   "permissions": [
     "activeTab",
-    "clipboardWrite",
     "scripting"
   ],
   "action": {
@@ -18,3 +17,4 @@
     "16": "icon16.png"
   }
 }
+
