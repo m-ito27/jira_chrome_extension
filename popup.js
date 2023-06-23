@@ -24,7 +24,9 @@ window.onload = function() {
 }
 
 function getUrlAndH1() {
-  let urlLastPart = window.location.pathname.split("/").pop();
-  let h1Text = document.querySelector('h1') ? document.querySelector('h1').innerText : '';
-  return `${urlLastPart} ${h1Text}`;
+  let url = new URL(window.location.href);
+  let jiraID = url.searchParams.get("selectedIssue") || url.pathname.split("/").pop();
+
+  let taskTitle = document.querySelector('h1[data-test-id="issue.views.issue-base.foundation.summary.heading"]').innerText
+  return `${jiraID} ${taskTitle}`;
 }
