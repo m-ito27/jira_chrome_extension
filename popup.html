@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
 <html>
   <head>
+    <meta charset="utf-8">
     <title>Copy JIRA for Report</title>
     <style>
       button {
@@ -24,7 +24,7 @@
         -webkit-user-select: none;
         touch-action: manipulation;
         vertical-align: middle;
-        width: 120px;
+        width: 140px;
         margin: 10px;
       }
 
@@ -37,11 +37,18 @@
         box-shadow: rgba(213, 217, 217, .5) 0 2px 5px 0;
         outline: 0;
       }
+
+      .button-image {
+        width: 20px;
+        height: 20px;
+        vertical-align: middle;
+        margin-right: 5px;
+      }
     </style>
     <script src="popup.js"></script>
   </head>
   <body>
-    <button id="copy">Copy Task</button>
-    <button id="all-task-copy-btn">Copy All Task</button>
+    <button id="copy"><img src='icon16.png' alt='copy-image' class="button-image">Copy Task</button>
+    <button id="all-task-copy-btn"><img src='icon16.png' alt='copy-image' class="button-image">Copy All Task</button>
   </body>
 </html>
