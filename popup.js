@@ -18,7 +18,7 @@ window.onload = function() {
     });
   });
 
-  document.getElementById('all-task-copy-btn').addEventListener('click', function() {
+  document.getElementById('all-task-copy-btn').addEventListener('click', async function() {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       chrome.scripting.executeScript({
         target: {tabId: tabs[0].id},
@@ -43,8 +43,27 @@ function getUrlAndH1() {
   return `${jiraID} ${taskTitle}`;
 }
 
-function getTasksText() {
+async function getTasksText() {
   let tasksElement = document.getElementById('your-work-dropdown-tabs-0-tab');
+  if (!tasksElement) {
+    headerElement = document.getElementById('ak-jira-navigation');
+    headerElement.querySelectorAll('span').forEach(async (spanElement) => {
+      if (spanElement.innerText === 'あなたの作業') {
+        spanElement.click();
+
+        await waitForElement('#your-work-dropdown-tabs-0-tab')
+      }
+    })
+    let spanElements = headerElement.querySelectorAll('span');
+    for (let spanElement of spanElements) {
+      if (spanElement.innerText === 'あなたの作業') {
+        spanElement.click();
+
+        tasksElement = await waitForElement('#your-work-dropdown-tabs-0-tab');
+        break;
+      }
+    }
+  }
   let copyText = ''
   reversedTaskList = Array.from(tasksElement.querySelectorAll("[data-ds--menu--heading-item='true']")).reverse()
   reversedTaskList.forEach((element) => {
@@ -54,9 +73,26 @@ function getTasksText() {
     parent.querySelectorAll("[data-item-title='true']").forEach((eachTask) => {
       taskTitle = eachTask.innerText
       jiraID = eachTask.parentElement.querySelector("[data-item-description='true']").childNodes[0].textContent
-      // console.log(`${jiraID} ${taskTitle}`)
       copyText = copyText.concat(`${jiraID} ${taskTitle}\n`)
     })
   })
   return copyText
+
+  function waitForElement(selector) {
+    return new Promise((resolve) => {
+      const observer = new MutationObserver((mutationsList, observer) => {
+        for(let mutation of mutationsList) {
+          if (mutation.type === 'childList') {
+            const element = document.querySelector(selector);
+            if (element) {
+              resolve(element);
+              observer.disconnect();
+            }
+          }
+        }
+      });
+
+      observer.observe(document.body, { attributes: false, childList: true, subtree: true });
+    });
+  }
 }
