@@ -47,13 +47,6 @@ async function getTasksText() {
   let tasksElement = document.getElementById('your-work-dropdown-tabs-0-tab');
   if (!tasksElement) {
     headerElement = document.getElementById('ak-jira-navigation');
-    headerElement.querySelectorAll('span').forEach(async (spanElement) => {
-      if (spanElement.innerText === 'あなたの作業') {
-        spanElement.click();
-
-        await waitForElement('#your-work-dropdown-tabs-0-tab')
-      }
-    })
     let spanElements = headerElement.querySelectorAll('span');
     for (let spanElement of spanElements) {
       if (spanElement.innerText === 'あなたの作業') {
