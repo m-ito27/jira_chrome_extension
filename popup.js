@@ -1,16 +1,24 @@
+const h1TitleTag = 'h1[data-test-id="issue.views.issue-base.foundation.summary.heading"]'
+const workPanelId = 'your-work-dropdown-tabs-0-tab'
+const headerId = 'ak-jira-navigation'
+const workStatusProp = "[data-ds--menu--heading-item='true']"
+const workTitleProp = "[data-item-title='true']"
+const workDescriptionProp = "[data-item-description='true']"
+
 window.onload = function() {
   document.getElementById('copy-single-task').addEventListener('click', function() {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       chrome.scripting.executeScript(
         {
           target: {tabId: tabs[0].id},
-          func: getUrlAndH1
+          func: getUrlAndH1,
+          args: [h1TitleTag]
         },
         (result) => {
           if (chrome.runtime.lastError) {
             console.error(chrome.runtime.lastError);
           } else {
-            // Use clipboard directly in the popup page.
+            // ポップアップページからなら直接クリップボードへのアクセスが可能
             navigator.clipboard.writeText(result[0].result)
           }
         }
@@ -23,6 +31,7 @@ window.onload = function() {
       chrome.scripting.executeScript({
         target: {tabId: tabs[0].id},
         func: getTasksText,
+        args: [workPanelId, headerId, workStatusProp, workTitleProp, workDescriptionProp]
       }, (results) => {
         if (chrome.runtime.lastError) {
           console.error(chrome.runtime.lastError);
@@ -35,38 +44,38 @@ window.onload = function() {
 
 }
 
-function getUrlAndH1() {
+function getUrlAndH1(h1TitleTag) {
   let url = new URL(window.location.href);
   let jiraID = url.searchParams.get("selectedIssue") || url.pathname.split("/").pop();
 
-  let taskTitle = document.querySelector('h1[data-test-id="issue.views.issue-base.foundation.summary.heading"]').innerText
+  let taskTitle = document.querySelector(h1TitleTag).innerText
   return `${jiraID} ${taskTitle}`;
 }
 
-async function getTasksText() {
-  let tasksElement = document.getElementById('your-work-dropdown-tabs-0-tab');
+async function getTasksText(workPanelId, headerId, workStatusProp, workTitleProp, workDescriptionProp) {
+  let tasksElement = document.getElementById(workPanelId);
   if (!tasksElement) {
-    headerElement = document.getElementById('ak-jira-navigation');
+    headerElement = document.getElementById(headerId);
     let spanElements = headerElement.querySelectorAll('span');
     for (let spanElement of spanElements) {
       if (spanElement.innerText === 'あなたの作業') {
         spanElement.click();
 
-        await waitForElement('#your-work-dropdown-tabs-0-tab', "[data-ds--menu--heading-item='true']");
-        tasksElement = document.getElementById('your-work-dropdown-tabs-0-tab');
+        await waitForElement(`#${workPanelId}`, workStatusProp);
+        tasksElement = document.getElementById(workPanelId);
         break;
       }
     }
   }
   let copyText = ''
-  reversedTaskList = Array.from(tasksElement.querySelectorAll("[data-ds--menu--heading-item='true']")).reverse()
+  reversedTaskList = Array.from(tasksElement.querySelectorAll(workStatusProp)).reverse()
   reversedTaskList.forEach((element) => {
     jiraStatus = element.innerText
     copyText = copyText.concat(`[${jiraStatus}]\n`)
     parent = element.parentElement
-    parent.querySelectorAll("[data-item-title='true']").forEach((eachTask) => {
+    parent.querySelectorAll(workTitleProp).forEach((eachTask) => {
       taskTitle = eachTask.innerText
-      jiraID = eachTask.parentElement.querySelector("[data-item-description='true']").childNodes[0].textContent
+      jiraID = eachTask.parentElement.querySelector(workDescriptionProp).childNodes[0].textContent
       copyText = copyText.concat(`${jiraID} ${taskTitle}\n`)
     })
   })
