@@ -1,4 +1,4 @@
-# Copy JIRA for Report(Chrome拡張機能)
+# <img width="40" alt="image" src="https://github.com/m-ito27/jira_chrome_extension/assets/65613054/a5b23880-ba8a-4c5a-9a96-e83c45578b62"> Copy JIRA for Report(Chrome拡張機能)
 
 ## What is this?
 
