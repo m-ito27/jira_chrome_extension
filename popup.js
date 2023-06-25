@@ -1,5 +1,5 @@
 window.onload = function() {
-  document.getElementById('copy').addEventListener('click', function() {
+  document.getElementById('copy-single-task').addEventListener('click', function() {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       chrome.scripting.executeScript(
         {
@@ -18,7 +18,7 @@ window.onload = function() {
     });
   });
 
-  document.getElementById('all-task-copy-btn').addEventListener('click', async function() {
+  document.getElementById('copy-all-task').addEventListener('click', async function() {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       chrome.scripting.executeScript({
         target: {tabId: tabs[0].id},
@@ -52,7 +52,8 @@ async function getTasksText() {
       if (spanElement.innerText === 'あなたの作業') {
         spanElement.click();
 
-        tasksElement = await waitForElement('#your-work-dropdown-tabs-0-tab');
+        await waitForElement('#your-work-dropdown-tabs-0-tab', "[data-ds--menu--heading-item='true']");
+        tasksElement = document.getElementById('your-work-dropdown-tabs-0-tab');
         break;
       }
     }
@@ -71,12 +72,12 @@ async function getTasksText() {
   })
   return copyText
 
-  function waitForElement(selector) {
+  function waitForElement(parentSelector, childSelector) {
     return new Promise((resolve) => {
       const observer = new MutationObserver((mutationsList, observer) => {
         for(let mutation of mutationsList) {
           if (mutation.type === 'childList') {
-            const element = document.querySelector(selector);
+            const element = document.querySelector(parentSelector)?.querySelector(childSelector);
             if (element) {
               resolve(element);
               observer.disconnect();
