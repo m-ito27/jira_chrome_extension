@@ -7,41 +7,28 @@ const workDescriptionProp = "[data-item-description='true']"
 
 window.onload = function() {
   document.getElementById('copy-single-task').addEventListener('click', function() {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.scripting.executeScript(
-        {
-          target: {tabId: tabs[0].id},
-          func: getUrlAndH1,
-          args: [h1TitleTag]
-        },
-        (result) => {
-          if (chrome.runtime.lastError) {
-            console.error(chrome.runtime.lastError);
-          } else {
-            // ポップアップページからなら直接クリップボードへのアクセスが可能
-            navigator.clipboard.writeText(result[0].result)
-          }
-        }
-      );
-    });
-  });
-
-  document.getElementById('copy-all-task').addEventListener('click', async function() {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.scripting.executeScript({
-        target: {tabId: tabs[0].id},
-        func: getTasksText,
-        args: [workPanelId, headerId, workStatusProp, workTitleProp, workDescriptionProp]
-      }, (results) => {
-        if (chrome.runtime.lastError) {
-          console.error(chrome.runtime.lastError);
-        } else {
-          navigator.clipboard.writeText(results[0].result);
-        }
-      });
-    });
+    writeToClipBoard(getUrlAndH1, [h1TitleTag])
   })
 
+  document.getElementById('copy-all-task').addEventListener('click', async function() {
+    writeToClipBoard(getTasksText, [workPanelId, headerId, workStatusProp, workTitleProp, workDescriptionProp])
+  })
+}
+
+function writeToClipBoard(func, args) {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.scripting.executeScript({
+          target: {tabId: tabs[0].id},
+          func: func,
+          args: args
+      }, (result) => {
+          if (chrome.runtime.lastError) {
+              console.error(chrome.runtime.lastError);
+          } else {
+              navigator.clipboard.writeText(result[0].result);
+          }
+      });
+  });
 }
 
 function getUrlAndH1(h1TitleTag) {
