@@ -1,4 +1,4 @@
-const h1TitleTag = 'h1[data-test-id="issue.views.issue-base.foundation.summary.heading"]'
+const h1TitleTag = 'h1[data-testid="issue.views.issue-base.foundation.summary.heading"]'
 const workPanelId = 'your-work-dropdown-tabs-0-tab'
 const headerId = 'ak-jira-navigation'
 const workStatusProp = "[data-ds--menu--heading-item='true']"
